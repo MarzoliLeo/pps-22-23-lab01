@@ -1,57 +1,52 @@
-package lab01.example.model;
+import lab01.example.model.AccountHolder;
+import lab01.example.model.BankAccount;
+import lab01.example.model.SimpleBankAccountWithAtm;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class SimpleBankAccountWithAtm implements BankAccount{
+import static org.junit.jupiter.api.Assertions.*;
 
-    private double balance;
-    private final AccountHolder holder;
+class SimpleBankAccountWithAtmTest {
 
-    /* Introduction of quality: Remove repetitive code. */
+    private AccountHolder accountHolder;
+    private BankAccount bankAccount;
 
-    private SimpleBankAccount simpleBankAccount;
-
-    /* **** */
-
-    public SimpleBankAccountWithAtm(final AccountHolder holder, final double balance) {
-        this.holder = holder;
-        this.balance = balance;
-        this.simpleBankAccount = new SimpleBankAccount(this.holder, this.balance);
-    }
-    @Override
-    public AccountHolder getHolder(){
-        return this.holder;
+    @BeforeEach
+    void beforeEach(){
+        accountHolder = new AccountHolder("Pluto", "Bravi", 5);
+        bankAccount = new SimpleBankAccountWithAtm(accountHolder, 0);
     }
 
-    @Override
-    public double getBalance() {
-        return this.balance;
+
+    @Test
+    public void testInitialBalance() {
+        assertEquals(0, bankAccount.getBalance());
     }
 
-    @Override
-    public void deposit(final int userID, final double amount) {
-        if (checkUser(userID)) {
-            System.out.println("Prima "+amount);
-            //TODO Fare un riferimento per delegazione con SimpleBankAccount
-            if (checkUser(userID)) {
-                this.balance += amount - 1;
-            }
-            System.out.println("Dopo " + amount);
-            //this.balance += amount;
-        }
+    @Test
+    public void testDeposit() {
+        bankAccount.deposit(accountHolder.getId(), 100);
+        assertEquals(99, bankAccount.getBalance());
     }
 
-    @Override
-    public void withdraw(final int userID, final double amount) {
-        if (checkUser(userID) && isWithdrawAllowed(amount)) {
-            this.balance -= amount + 1;
-            //this.balance -= amount;
-        }
+    @Test
+    public void testWrongDeposit() {
+        bankAccount.deposit(accountHolder.getId(), 100);
+        bankAccount.deposit(2, 50);
+        assertEquals(99, bankAccount.getBalance());
     }
 
-    private boolean isWithdrawAllowed(final double amount){
-        return this.balance >= (amount + 1) /* 1$ di transazione */;
+    @Test
+    public void testWithdraw() {
+        bankAccount.deposit(accountHolder.getId(), 100);
+        bankAccount.withdraw(accountHolder.getId(), 70);
+        assertEquals(28, bankAccount.getBalance());
     }
 
-    private boolean checkUser(final int id) {
-        return this.holder.getId() == id;
+    @Test
+    public void testWrongWithdraw() {
+        bankAccount.deposit(accountHolder.getId(), 100);
+        bankAccount.withdraw(2, 70);
+        assertEquals(99, bankAccount.getBalance());
     }
 }
