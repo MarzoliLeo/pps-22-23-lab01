@@ -29,12 +29,10 @@ public class SimpleBankAccountWithAtm implements BankAccount{
     @Override
     public void deposit(final int userID, final double amount) {
         if (checkUser(userID)) {
-            System.out.println("Prima "+amount);
             //TODO Fare un riferimento per delegazione con SimpleBankAccount
             if (checkUser(userID)) {
                 this.balance += amount - 1;
             }
-            System.out.println("Dopo " + amount);
             //this.balance += amount;
         }
     }
